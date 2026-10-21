@@ -1,0 +1,118 @@
+# RiTAL — RNAmigos 10-fold
+# RiTAL — RNAmigos 10-fold benchmark dataset
+#   seed rotation: 3 epochs no improvement → reload best + new seed + fresh warmup
+#
+# Dataset
+# -------
+#   rnamigos_10fd_with_decoys.pkl  — 765 pockets, 10 folds (~77 test per fold)
+#   decoy_smiles: FP2 fingerprint arrays (1024-dim), resolved via decoy_fp2_lookup.pkl
+#   native SMILES: downloaded_ligand_smiles
+#   3D JSON: json_pockets_clean (70.6% coverage, 540/765 pockets)
+#
+# Architecture identical to the v31 config (8-dim RNA nodes,
+# 6 EGNN layers, 4 cross-attn layers, use_dist_bias).
+# Key differences vs v31:
+#   - epochs: 30  (each SLURM job; resume across resubmits)
+#   - seed_rotation.patience: 3  (replace reload-ckpt with seed rotation)
+#   - early_stopping.patience: 999  (disabled; rely on max resubmits instead)
+#   - removed reload_patience / reload_lr_scale
+
+seed: 42
+
+seed_rotation:
+  patience: 3   # epochs without val-RP improvement → rotate seed + re-warmup
+
+data:
+  pkl_path: ${RITAL_DATA}/rnamigos_10fd.pkl
+  decoy_lookup_path: ${RITAL_DATA}/decoy_fp2_lookup.pkl
+  rna3d_dirs:
+    - ${RITAL_DATA}/json_pockets_clean
+
+model:
+  version: 3
+  embed_dim: 256
+  num_heads: 4
+  dropout: 0.10
+  max_rna_tokens: 80
+  max_lig_tokens: 64
+
+  include_pocket_feat: true
+
+  rna_tower:
+    encoder_type: egnn
+    num_layers: 6
+
+  interaction:
+    num_layers: 4
+    use_dist_bias: true
+
+  use_pretrained_ligand: false
+
+  ligand_tower:
+    num_layers: 4
+
+  projection:
+    dim: 256
+    normalize: true
+
+train:
+  batch_size: 8
+  epochs: 30
+  steps_per_epoch: 1500
+  lr: 5.0e-5
+  weight_decay: 1.0e-4
+  grad_clip: 1.0
+
+  lr_scheduler:
+    type: cosine
+    warmup_steps: 100
+    min_lr_ratio: 0.02
+
+  decoy_curriculum:
+    stage1_negatives_per_positive: 48
+    stage2_negatives_per_positive: 64
+    stage3_negatives_per_positive: 72
+    cross_pocket_ratio: 0.667
+
+  val_decoy_k: 100
+
+  moco_queue_size: 0
+  moco_queue_in_smol_cts: false
+
+hard_negative_mining:
+  enabled: true
+  start_epoch: 5
+  refresh_every: 3
+  n_candidates: 40
+  keep_frac: 0.5
+
+loss:
+  use_circle_loss: false
+  contrastive_temperature: 0.2
+
+  ranking_margin: 0.6
+  margin_restart_epochs: 8
+
+  lambda_contrast: 0.1
+  lambda_rank: 0.5
+  lambda_rna_contrast: 0.3
+  lambda_soft_rp: 2.0
+  soft_rp_temp: 0.07
+
+  lambda_site: 0.3
+  site_start_epoch: 7
+
+  hard_margin_topk: 0
+  adaptive_margin: false
+
+schedule:
+  stage1_epochs: 1
+  stage2_epochs: 3
+
+output:
+  checkpoint_dir: ${RITAL_RUNS}/rnamigos10fd/fold0
+  log_every: 50
+  val_max_pockets: 0
+
+early_stopping:
+  patience: 999   # effectively disabled; use MAX_RESUBMITS in SLURM to cap total epochs
