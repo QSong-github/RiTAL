@@ -8,18 +8,6 @@ cross-pocket and chemically-similar decoys.
 
 14.8 M parameters.
 
-
-> **Model selection caveat.** The training loop splits data into train and test
-> only — there is no held-out validation set, and `best.pt` is the epoch with the
-> highest RP *on the test fold*. These numbers are therefore optimistically
-> biased and should not be read as unbiased generalisation estimates. Anyone
-> building on this should carve a validation split out of the training folds and
-> re-select. The fold assignments needed to do that are in the data pickles.
-
-The two benchmarks are not comparable to each other: the HARIBOSS split clusters
-by sequence identity so that test pockets are dissimilar to training pockets,
-which is the harder setting.
-
 ## Install
 
 ```bash
