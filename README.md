@@ -8,15 +8,6 @@ cross-pocket and chemically-similar decoys.
 
 14.8 M parameters.
 
-## Results
-
-Mean rank percentile (RP) of the native ligand against the decoy pool, averaged
-over folds. Per-fold numbers in [RESULTS.md](RESULTS.md).
-
-| Benchmark | Folds | Mean RP |
-|---|---|---|
-| RNAmigos, 10-fold | 10 | **0.835 ± 0.044** |
-| HARIBOSS, 5-fold, sequence-clustered split | 5 | **0.770 ± 0.016** |
 
 > **Model selection caveat.** The training loop splits data into train and test
 > only — there is no held-out validation set, and `best.pt` is the epoch with the
