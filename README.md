@@ -147,7 +147,4 @@ for release. If you are comparing against internal notes or earlier runs:
 | `UnifiedInteractionModelV4` / `V10` (stubs) | `RiTALModelRNAFM` / `RiTALModelRNAFMPlus` |
 | `BridgeSample` | `RiTALSample` |
 
-The rename does not affect existing weights: checkpoints store a `state_dict`,
-whose keys follow attribute names rather than class names. All 15 released
-checkpoints load with `strict=True` under the new names — `_build/smoke_test.py`
-re-checks this.
+
