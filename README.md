@@ -2,21 +2,9 @@
 
 **RiTAL** (RNA Interaction Transformer with Attentive Ligand Modeling) is a
 geometry-aware deep learning model for structure-based virtual screening in
-RNA-targeted drug discovery. It ranks small molecules by their predicted
-compatibility with a three-dimensional RNA binding pocket without requiring
-predefined docking poses.
-
-RiTAL uses an E(3)-equivariant graph neural network to encode the RNA pocket
-and a graph isomorphism network (GIN) to encode the ligand. Geometry-aware
-self-attention and bidirectional RNA–ligand cross-attention refine the
-representations for each pocket–ligand pair before scoring. RiTAL also
-provides residue-level binding-site predictions.
-
-The study evaluated RiTAL on the HARIBOSS and RNAmigos benchmarks, where it
-achieved higher mean native-ligand rank percentiles than the evaluated
-RNAmigos baselines. In a screen of approximately two million ZINC compounds
-against 23 RNA pockets, RiTAL achieved a mean native-ligand rank percentile
-of 0.951.
+RNA-targeted drug discovery. It uses three-dimensional RNA pocket geometry
+and bidirectional RNA–ligand cross-attention to rank small molecules and
+predict residue-level binding sites.
 
 14.8 M parameters.
 
