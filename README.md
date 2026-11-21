@@ -6,8 +6,6 @@ RNA-targeted drug discovery. It uses three-dimensional RNA pocket geometry
 and bidirectional RNA–ligand cross-attention to rank small molecules and
 predict residue-level binding sites.
 
-14.8 M parameters.
-
 ## Install
 
 ```bash
